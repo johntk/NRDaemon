@@ -17,5 +17,6 @@
         <jarDirectory url="file://$MODULE_DIR$/lib/httpcomponents-client-4.5.1/lib" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="commons-lang3-3.4" level="project" />
   </component>
 </module>
