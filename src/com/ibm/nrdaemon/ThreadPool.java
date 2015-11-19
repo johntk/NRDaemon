@@ -2,23 +2,17 @@ package com.ibm.nrdaemon;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Cloud on 19/11/2015.
  */
 public class ThreadPool {
 
-    public static void main(String [] args){
-        ExecutorService executor = Executors.newFixedThreadPool(5);
-        for (int i = 0; i < 10; i++) {
-            Runnable worker = new Daemon();
-            executor.execute(worker);
-        }
-        executor.shutdown();
-        while (!executor.isTerminated()) {
-        }
-        System.out.println("Finished all threads");
+    public static void main(String [] args) throws InterruptedException {
+        ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+        Runnable worker = new Daemon();
+        executor.scheduleAtFixedRate(worker, 0, 20, TimeUnit.SECONDS);
     }
-
-
 }
