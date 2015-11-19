@@ -20,7 +20,7 @@ public class Environment {
         this.name = envName;
         this.apiKey = null;
         this.dateRange = new DateRange(null, null);
-        applications = new HashMap<>();
+        this.applications = new HashMap<>();
     }
 
     public String getName() {

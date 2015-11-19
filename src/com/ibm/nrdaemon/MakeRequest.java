@@ -9,6 +9,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 
 /**
@@ -54,8 +56,14 @@ public class MakeRequest {
                  * to the preprocessor when it's listening.
                  */
                 System.out.println(json.toString());
+
+                Queue applicationQ = new PriorityQueue();
+                applicationQ.add(json);
             }
         }
         System.out.println("done.");
     }
+
+
+
 }

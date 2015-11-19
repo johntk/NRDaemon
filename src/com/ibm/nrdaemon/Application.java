@@ -1,13 +1,9 @@
 package com.ibm.nrdaemon;
 
-
 import org.apache.http.client.ClientProtocolException;
-
 
 import java.io.IOException;
 import java.util.List;
-
-
 
 /**
  * The Application class contains the friendly name of the application, the ID value
@@ -23,15 +19,11 @@ public class Application extends EnvironmentChild {
     List<Integer> weeklyAvgList;
     List<Integer> weeklyMaxList;
 
-    
-
 	public Application(Environment environment, String name) {
         super(environment, name);
 
         this.json = null;
     }
-
-
 
     public String getJson() {
         return json;
