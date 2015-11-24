@@ -6,11 +6,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 
 /**
@@ -19,7 +16,7 @@ import java.util.Queue;
 public class MakeRequest {
 
     /**
-     *  NewRelic Address and Metric names, Probably should move these to the properties file
+     *  NewRelic Address and Metric names,  Should move these to the properties file
      */
     private static final String nrUrl = "https://api.newrelic.com/v2/applications/";
     private static final String names = "/metrics/data.json?names[]=HttpDispatcher&values[]=requests_per_minute&from=";
@@ -28,7 +25,7 @@ public class MakeRequest {
      * This method makes the REST API request(s) to New Relic to retrieve the
      * data
      */
-    protected void makeApplicationRESTRequest(FetchProperties fetch) throws IllegalStateException, IOException {
+    protected void makeApplicationRESTRequest(FetchProperties fetch) throws Exception {
         CloseableHttpClient client;
         InputStream input;
 
@@ -55,10 +52,14 @@ public class MakeRequest {
                  * These responses need to be stored in a Q ready to be sent
                  * to the preprocessor when it's listening.
                  */
-                System.out.println(json.toString());
+                System.out.println(json);
 
-                Queue applicationQ = new PriorityQueue();
-                applicationQ.add(json);
+                /**
+                 *  Creates a publisher object which is responsible for
+                 *  sending data to the HornetQ on the Wildfly AS
+                 */
+                Publisher AppData = new Publisher();
+                AppData.Send(json);
             }
         }
         System.out.println("done.");

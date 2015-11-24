@@ -21,7 +21,7 @@ public class FetchProperties {
     /**
      * This is a hack to view debug print outs
      */
-    protected boolean debug = true;
+    protected boolean debug = false;
 
 
     /**
@@ -79,7 +79,7 @@ public class FetchProperties {
             String environmentName = env.getName();
             String propertyName = "key." + environmentName;
             String key = p.getProperty(propertyName);
-            System.out.println("Key = " + environments.size());
+            System.out.println("Key = " + key);
             if (null == key) {
                 fatalConfigError("No API key was configured for environment '"
                         + environmentName + "'.");

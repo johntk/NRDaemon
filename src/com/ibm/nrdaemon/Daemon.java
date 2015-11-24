@@ -23,8 +23,8 @@ public class Daemon implements Runnable {
             /**
              * Set the location of the properties file
              */
-//          d.setupConfig("data/applicationTemplates/datacenterALL.properties");
-            setupConfig("data/datacenter.properties");
+            String propPath = "D:\\Projects\\JavaProjects\\NewRelicDaemon\\data\\datacenter.properties";
+            setupConfig(propPath);
             if ("applications".equalsIgnoreCase(fetch.getMode())) {
                 runModeApplications();
             } else {
@@ -49,6 +49,10 @@ public class Daemon implements Runnable {
      */
     protected void runModeApplications() throws IOException {
         MakeRequest request = new MakeRequest();
-        request.makeApplicationRESTRequest(fetch);
+        try {
+            request.makeApplicationRESTRequest(fetch);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

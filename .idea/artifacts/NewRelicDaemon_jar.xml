@@ -1,0 +1,20 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="NewRelicDaemon:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/NewRelicDaemon_jar</output-path>
+    <root id="archive" name="NewRelicDaemon.jar">
+      <element id="module-output" name="NewRelicDaemon" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/jna-4.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/commons-io-2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpcore-4.4.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpmime-4.5.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/fluent-hc-4.5.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpclient-4.5.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/commons-codec-1.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/jna-platform-4.1.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/commons-logging-1.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpclient-win-4.5.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpclient-cache-4.5.1.jar" path-in-jar="/" />
+      <element id="dir-copy" path="$PROJECT_DIR$/data" />
+    </root>
+  </artifact>
+</component>
