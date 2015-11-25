@@ -10,10 +10,8 @@ import javax.naming.*;
 
 public class Publisher implements ExceptionListener{
 
-    /**
-     * Set up all the default values
-     * Possibly put these into a properties file when refining
-     */
+    /** Set up all the default values
+     *  Possibly put these into a properties file when refining */
     private static final Logger log = Logger.getLogger(Publisher.class.getName());
     private static final String DEFAULT_CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
     private static final String DEFAULT_DESTINATION = "java:/jms/queue/demoQueue";
@@ -29,15 +27,13 @@ public class Publisher implements ExceptionListener{
     protected void Publish(String JSONData) throws Throwable {
 
         try {
-            /** get the initial context */
+            /** Get the initial context */
             final Properties props = new Properties();
             props.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-            props.put(Context.PROVIDER_URL, System.getProperty(Context.PROVIDER_URL, PROVIDER_URL));
-            props.put(Context.SECURITY_PRINCIPAL, System.getProperty("username", DEFAULT_USERNAME));
-            props.put(Context.SECURITY_CREDENTIALS, System.getProperty("password", DEFAULT_PASSWORD));
+            props.put(Context.PROVIDER_URL, PROVIDER_URL);
+            props.put(Context.SECURITY_PRINCIPAL, DEFAULT_USERNAME);
+            props.put(Context.SECURITY_CREDENTIALS, DEFAULT_PASSWORD);
             context = new InitialContext(props);
-
-            /** lookup Perform the JNDI lookups */
 
             /** Lookup the queue object */
             Queue queue = (Queue) context.lookup(DEFAULT_DESTINATION);
