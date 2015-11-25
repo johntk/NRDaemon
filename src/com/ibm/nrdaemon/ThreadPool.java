@@ -13,6 +13,6 @@ public class ThreadPool {
     public static void main(String [] args) throws InterruptedException {
         ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
         Runnable worker = new Daemon();
-        executor.scheduleAtFixedRate(worker, 0, 20, TimeUnit.SECONDS);
+        executor.scheduleAtFixedRate(worker, 0, 40, TimeUnit.SECONDS);
     }
 }

@@ -25,9 +25,10 @@ public class MakeRequest {
      * This method makes the REST API request(s) to New Relic to retrieve the
      * data
      */
-    protected void makeApplicationRESTRequest(FetchProperties fetch) throws Exception {
+    protected void makeApplicationRESTRequest(FetchProperties fetch) throws Throwable {
         CloseableHttpClient client;
         InputStream input;
+        Publisher application = new Publisher();
 
         for(Environment env : fetch.getEnvironments() ){
 
@@ -46,25 +47,16 @@ public class MakeRequest {
                 HttpResponse response = client.execute(request);
 
                 input = response.getEntity().getContent();
-                String json = IOUtils.toString(input);
+                String newRelicResponse = IOUtils.toString(input);
+                System.out.println(newRelicResponse);
 
-                /**
-                 * These responses need to be stored in a Q ready to be sent
-                 * to the preprocessor when it's listening.
-                 */
-                System.out.println(json);
+                Thread.sleep(4000);
 
-                /**
-                 *  Creates a publisher object which is responsible for
-                 *  sending data to the HornetQ on the Wildfly AS
-                 */
-                Publisher AppData = new Publisher();
-                AppData.Send(json);
+                /**  Creates a publisher object which is responsible for
+                 *  sending data to the HornetQ on the Wildfly AS */
+                application.Publish(newRelicResponse);
             }
         }
         System.out.println("done.");
     }
-
-
-
 }

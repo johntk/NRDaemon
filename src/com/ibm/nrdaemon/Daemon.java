@@ -53,6 +53,8 @@ public class Daemon implements Runnable {
             request.makeApplicationRESTRequest(fetch);
         } catch (Exception e) {
             e.printStackTrace();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
         }
     }
 }
