@@ -5,14 +5,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * This is the entry point of the application, it is responsible for creating the objects that store the
- * property values, creating the worker threads and ading them to the thread pool
- */
+
+/** This is the entry point of the application, it is responsible for creating the objects that store the
+ * property values, creating the worker threads and adding them to the thread pool */
 public class Daemon {
 
-    /** Object parses properties files into classes*/
-    private FetchProperties fetch;
+    /** FetchProperties Object parses properties files into classes*/
+    private FetchProperties fetchApp;
+    private FetchProperties fetchPublisher;
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -28,14 +28,16 @@ public class Daemon {
     /** Calls the method that builds Environment objects (Environment objects store .properties)*/
     private void setupConfig() throws IOException {
 
-        /** Set the location of the properties file*/
-        String propertiesFileName = "datacenter.properties";
+        /** get the properties file names*/
+        String applicationPropFileName = "datacenter.properties";
+        String publisherPropFileName = "publisher.properties";
 
-        /** Create the properties object*/
-        fetch = new FetchProperties();
+        /** Create the properties objects*/
+        fetchApp = new FetchProperties();
+        fetchPublisher = new FetchProperties();
 
         /**Parse the properties into classes*/
-        fetch.buildConfig(propertiesFileName);
+        fetchApp.buildConfig(applicationPropFileName);
     }
 
     /** Calls the methods responsible for thread creation*/
@@ -43,13 +45,13 @@ public class Daemon {
 
         try {
             /** if the properties are set in application mode start processing application data*/
-            if ("applications".equalsIgnoreCase(fetch.getMode())) {
+            if ("applications".equalsIgnoreCase(fetchApp.getMode())) {
                 runModeApplications();
             }
             /** Servers and plugins will be added here*/
             /** Else print the mode that was not recognised*/
             else {
-                System.out.println("Mode: " + fetch.getMode() + " not recognized");
+                System.out.println("Mode: " + fetchApp.getMode() + " not recognized");
                 System.exit(0);
             }
         } catch (Throwable throwable) {
@@ -61,10 +63,10 @@ public class Daemon {
     protected void runModeApplications() throws Throwable {
 
         /** Thread Pool*/
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
 
         /** Loop through Environment List<>*/
-        for (Environment env : fetch.getEnvironments()) {
+        for (Environment env : fetchApp.getEnvironments()) {
             Map<String, Application> mapOfApps = env.getApplications();
             /** Loop through Application Map*/
             for (Map.Entry<String, Application> app : mapOfApps.entrySet()) {

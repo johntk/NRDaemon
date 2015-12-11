@@ -1,24 +1,15 @@
 package com.ibm.nrdaemon;
 
-/**
- * Created by John TK on 20/11/2015.
- */
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 import javax.jms.*;
 import javax.naming.*;
 
+/** This class sends the New Relic Response data to the Wildfly AS */
 public class Publisher implements ExceptionListener{
 
-    /** Set up all the default values
-     *  Possibly put these into a properties file when refining */
     private static final Logger log = Logger.getLogger(Publisher.class.getName());
-    private static final String DEFAULT_CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
-    private static final String DEFAULT_DESTINATION = "java:/jms/queue/demoQueue";
-    private static final String DEFAULT_USERNAME = "jmsuser";
-    private static final String DEFAULT_PASSWORD = "babog2001";
-    private static final String INITIAL_CONTEXT_FACTORY = "org.jboss.naming.remote.client.InitialContextFactory";
-    private static final String PROVIDER_URL = "http-remoting://johnkiernan.ie:80";
     private Connection connection = null;
     private MessageProducer producer;
     private Session queueSession;
@@ -29,20 +20,24 @@ public class Publisher implements ExceptionListener{
         try {
             /** Get the initial context */
             final Properties props = new Properties();
-            props.put(Context.INITIAL_CONTEXT_FACTORY, INITIAL_CONTEXT_FACTORY);
-            props.put(Context.PROVIDER_URL, PROVIDER_URL);
-            props.put(Context.SECURITY_PRINCIPAL, DEFAULT_USERNAME);
-            props.put(Context.SECURITY_CREDENTIALS, DEFAULT_PASSWORD);
+            String applicationPropFileName = "publisher.properties";
+            InputStream f =  getClass().getClassLoader().getResourceAsStream(applicationPropFileName);
+            props.load(f);
+            /** These few lines should be removed and setup in the properties file*/
+            props.put(Context.INITIAL_CONTEXT_FACTORY, props.getProperty("INITIAL_CONTEXT_FACTORY"));
+            props.put(Context.PROVIDER_URL, props.getProperty("PROVIDER_URL"));
+            props.put(Context.SECURITY_PRINCIPAL, props.getProperty("DEFAULT_USERNAME"));
+            props.put(Context.SECURITY_CREDENTIALS, props.getProperty("DEFAULT_PASSWORD"));
             context = new InitialContext(props);
 
             /** Lookup the queue object */
-            Queue queue = (Queue) context.lookup(DEFAULT_DESTINATION);
+            Queue queue = (Queue) context.lookup(props.getProperty("DEFAULT_DESTINATION"));
 
             /** Lookup the queue connection factory */
-            ConnectionFactory connFactory = (ConnectionFactory) context.lookup(DEFAULT_CONNECTION_FACTORY);
+            ConnectionFactory connFactory = (ConnectionFactory) context.lookup(props.getProperty("DEFAULT_CONNECTION_FACTORY"));
 
             /** Create a queue connection */
-            connection = connFactory.createConnection(DEFAULT_USERNAME, DEFAULT_PASSWORD);
+            connection = connFactory.createConnection(props.getProperty("DEFAULT_USERNAME"), props.getProperty("DEFAULT_PASSWORD"));
 
             /** Create a queue session */
             queueSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);

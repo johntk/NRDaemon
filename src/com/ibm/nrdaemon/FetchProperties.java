@@ -14,7 +14,6 @@ public class FetchProperties {
     private List<Environment> environments = new ArrayList<>();
 
 
-
     /** This is a hack to view debug print outs*/
     protected boolean debug = false;
 
