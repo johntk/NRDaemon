@@ -15,6 +15,11 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpclient-win-4.5.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/httpclient-cache-4.5.1.jar" path-in-jar="/" />
       <element id="dir-copy" path="$PROJECT_DIR$/data" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/jboss-client.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/lib/httpcomponents-client-4.5.1/lib/jna-4.1.0.jar" />
+      <element id="library" level="project" name="jboss-modules" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/javax.jms.jar/javax.jms.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jboss-client.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
