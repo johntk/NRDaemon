@@ -1,10 +1,14 @@
 package com.ibm.nrdaemon;
 
+import com.ibm.nrdaemon.model.Application;
+import com.ibm.nrdaemon.model.Environment;
+import com.ibm.nrdaemon.operations.FetchProperties;
+import com.ibm.nrdaemon.operations.PollThread;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 
 /** This is the entry point of the application, it is responsible for creating the objects that store the
  * property values, creating the worker threads and adding them to the thread pool */
@@ -12,7 +16,6 @@ public class Daemon {
 
     /** FetchProperties Object parses properties files into classes*/
     private FetchProperties fetchApp;
-    private FetchProperties fetchPublisher;
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -30,11 +33,9 @@ public class Daemon {
 
         /** get the properties file names*/
         String applicationPropFileName = "datacenter.properties";
-        String publisherPropFileName = "publisher.properties";
 
         /** Create the properties objects*/
         fetchApp = new FetchProperties();
-        fetchPublisher = new FetchProperties();
 
         /**Parse the properties into classes*/
         fetchApp.buildConfig(applicationPropFileName);
