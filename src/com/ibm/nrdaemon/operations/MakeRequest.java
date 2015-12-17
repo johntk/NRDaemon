@@ -2,12 +2,12 @@ package com.ibm.nrdaemon.operations;
 
 import com.ibm.nrdaemon.model.Application;
 import com.ibm.nrdaemon.model.Environment;
+import com.ibm.nrdaemon.model.TimestampUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -26,8 +26,11 @@ public class MakeRequest {
         String appID = entry.getValue().getId();
         String appName = entry.getValue().getName();
 
-        /** Create the string to send in the request to New relic*/
-        String url = env.getURL() + appID + env.getMetricNames();
+        /** Create the string to send in the request to New relic, works with out using "TimestampUtils.format" may remove after further testing*/
+        String url = env.getURL() + appID + env.getMetricNames() + env.getDateRange().getFrom() + "&to=" + TimestampUtils.format(env.getDateRange().getTo()) + "&period=60";
+
+//        System.out.println("Standard" + env.getDateRange().getFrom());
+//        System.out.println("TImestamp Parser" +TimestampUtils.format(env.getDateRange().getTo()));
 
         /** Create the request using Apache API*/
         CloseableHttpClient client = HttpClientBuilder.create().build();
@@ -46,7 +49,7 @@ public class MakeRequest {
         /** New JSONobject to send to PreProcessor*/
         JSONObject application = new JSONObject();
 
-//        /** JSONArray to put application ID and the NR response JSONObject*/
+       /** JSONArray to put application ID and the NR response JSONObject, probably don't need, may remove*/
 //        JSONArray array = new JSONArray();
 //        array.put(appID);#
 //        array.put(JSON);

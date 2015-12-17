@@ -1,10 +1,11 @@
 package com.ibm.nrdaemon.operations;
 
 import com.ibm.nrdaemon.model.Application;
+import com.ibm.nrdaemon.model.DateRange;
 import com.ibm.nrdaemon.model.Environment;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormat;
+import org.joda.time.Instant;
+
 
 import java.util.Map;
 
@@ -17,10 +18,13 @@ public class PollThread implements Runnable{
     protected boolean debug = true;
 
     /** Today's date and time*/
-    LocalDateTime dateNow;
+    Instant dateNow;
 
-    /** Stores the application TimeRange property, which specifies when the worker thread in run() should end*/
-    DateTime dateFinish;
+    /** This is the time for the thread to sleep between requests, this will not be hardcoded in the future */
+    String dateDelta = "300000";
+
+    Instant dateFrom;
+    Instant dateTo;
 
     /** Request object to make request to New Relic*/
     MakeRequest request = new MakeRequest();
@@ -37,30 +41,39 @@ public class PollThread implements Runnable{
     public PollThread(Map.Entry<String, Application> app, Environment env){
         this.currentEnvironment = env;
         this.currentApplication = app;
-        this.dateFinish = DateTime.parse(currentApplication.getValue().getTimeRange(), DateTimeFormat.forPattern("dd/MM/yyyy HH:mm:ss"));
+
+        /** Set the dateFrom  and dateTo based on the properties value, format it using TimestampUtils and Joda-time*/
+        this.dateFrom = currentEnvironment.getDateRange().getFrom();
+        this.dateTo = currentEnvironment.getDateRange().getTo();
     }
 
     @Override
     public void run() {
-        dateNow = LocalDateTime.now();
-        while(dateNow.isBefore(dateFinish.toLocalDateTime())) {
+        dateNow = Instant.now();
+
+        /** Check if Todays date is Between thr from and to date range set in the properties file*/
+        while(dateNow.isAfter(dateFrom) && dateNow.isBefore(dateTo)) {
             try {
+
+                /**  Wait for first Delta time in order to allow the app to generate the first delta minutes */
+                Thread.sleep(Integer.parseInt(dateDelta));
+
                 /**  Makes the request to New Relic */
                 String NRResponseData = request.makeApplicationRESTRequest(currentApplication, currentEnvironment);
 
                 /**  Publishes New Relic response data to the HornetQ on the Wildfly AS */
-                application.Publish(NRResponseData);
+//                application.Publish(NRResponseData);
 
                 if (debug){
-                    System.out.println(dateNow);
+//                    System.out.println("Date now inside Worker" + dateNow);
                     System.out.println(NRResponseData);
                 }
 
-                /**  Sleep is based on properties configuration */
-                Thread.sleep(Integer.parseInt(currentApplication.getValue().getTimePollGranularity()));
-
                 /**  Update current Date/Time*/
-                dateNow = LocalDateTime.now();
+                dateNow = Instant.now();
+                DateRange updateDate = new DateRange(dateNow.toString() ,dateTo.toString());
+                currentEnvironment.setDateRange(updateDate);
+//                System.out.println(currentEnvironment.getDateRange().getFrom());
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }

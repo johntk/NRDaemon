@@ -11,6 +11,7 @@ public class Environment {
     private String apiKey;
     private String metricNames;
     private String URL;
+    private DateRange dateRange;
     private final Map<String, Application> applications;
 
     public Environment(String envName) {
@@ -19,11 +20,20 @@ public class Environment {
         this.applications = new HashMap<>();
         this.metricNames = null;
         this.URL = null;
+        this.dateRange = new DateRange(null, null);
     }
 
     public String getName() {return name;}
 
     public String getApiKey() {return apiKey;}
+
+    public DateRange getDateRange() {
+        return dateRange;
+    }
+
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
+    }
 
     public void setApiKey(String envKey) {this.apiKey = envKey;}
 

@@ -1,6 +1,7 @@
 package com.ibm.nrdaemon.operations;
 
 import com.ibm.nrdaemon.model.Application;
+import com.ibm.nrdaemon.model.DateRange;
 import com.ibm.nrdaemon.model.Environment;
 
 import java.io.File;
@@ -38,6 +39,7 @@ public class FetchProperties {
 
         parseEnvironmentNames(props);
         readEnvironmentValues(props);
+        readEnvironmentDateRange(props);
 
         String applications = (String) props.get("applications");
 
@@ -109,22 +111,43 @@ public class FetchProperties {
             while (st.hasMoreTokens()) {
                 String appName = st.nextToken();
 
-                if (debug)
-                    System.out.println("DEBUG: appName= " + appName);
+//                if (debug)
+//                    System.out.println("DEBUG: appName= " + appName);
 
-                String timeRange = p.getProperty("timeRange."+ environmentName+ "." + appName);
-                String timePollGranularity = p.getProperty("timePollGranularity."+ environmentName+ "." + appName);
+//                String timeRange = p.getProperty("timeRange."+ environmentName+ "." + appName);
+//                String timePollGranularity = p.getProperty("timePollGranularity."+ environmentName+ "." + appName);
                 String appId = getStringProperty(p, "appid." + env.getName() + "." + appName);
 
 
                 /** Create a new application object for each appName*/
                 Application app = new Application(env, appName);
                 app.setId(appId);
-                app.setTimePollGranularity(timePollGranularity);
-                app.setTimeRange(timeRange);
+//                app.setTimePollGranularity(timePollGranularity);
+//                app.setTimeRange(timeRange);
                 env.addApplication(app);
             }
         }
+    }
+
+
+    /**
+     * Get the date range to use for each environment from our properties. New
+     * Relic will be queried for application usage rates based on date range.
+     */
+    protected void readEnvironmentDateRange(Properties p) {
+        for (Environment env : environments) {
+            String environmentName = env.getName();
+            String dateRangePropertyTo = "daterange." + environmentName + ".to";
+            String dateRangePropertyFrom = "daterange." + environmentName + ".from";
+            String to = getStringProperty(p, dateRangePropertyTo);
+            String from = getStringProperty(p, dateRangePropertyFrom);
+
+            // if (debug)
+
+            System.out.println("DEBUG: date range='" + from + "' to '" + to + "'");
+            env.setDateRange(new DateRange(from, to));
+        }
+
     }
 
     public List<Environment> getEnvironments() {return environments;}
