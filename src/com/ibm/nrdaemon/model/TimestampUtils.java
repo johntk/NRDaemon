@@ -9,6 +9,9 @@ import org.joda.time.format.DateTimeFormatter;
 
 import java.sql.Timestamp;
 
+/** This class is used to format the joda Instants into strings for the New Relic requests
+ *  I'm using Joda-Time Instant and New Relic seem to be able to handle the string representation
+ *  of Instant in the request, this class may be redundant and may be removed */
 public final class TimestampUtils {
     /** TODO: Documentation */
     public static final long MILLIS_PER_SECOND = 1000;
@@ -35,7 +38,7 @@ public final class TimestampUtils {
     }
 
 
-    /**  Formats the string  to 2015-12-17T16:22:40+00:00, maybe need like this for DB insert, may remove*/
+    /**  Formats the string to 2015-12-17T16:22:40+00:00, maybe need this for DB insert, may remove*/
     public static Instant parseTimestamp(String value) {
         return parseTimestamp(value, new Instant(0L));
     }
@@ -56,6 +59,7 @@ public final class TimestampUtils {
         return defaultValue;
     }
 
+    /**  These 2 methods are from old code, not sure of purpose yet, mey remove*/
     public static Instant earliestPeriod(Timestamp timestamp, int granularity) {
         return new Instant(MathUtils.modulusFloor(timestamp.getTime(), MILLIS_PER_MINUTE * granularity));
     }

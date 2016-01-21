@@ -17,14 +17,16 @@ public class PollThread implements Runnable{
     /** This is a hack to view debug print outs*/
     protected boolean debug = true;
 
-    /** Today's date and time*/
+    /** Today's date and time, I may add this to the dateRange class, need to ask Mentor */
     Instant dateNow;
 
     /** This is the time for the thread to sleep between requests, this will not be hardcoded in the future */
-    String dateDelta = "300000";
+    String dateDelta = "9000";
 
+    /** This is the dateRange for the thread to run*/
     Instant dateFrom;
     Instant dateTo;
+
 
     /** Request object to make request to New Relic*/
     MakeRequest request = new MakeRequest();
@@ -50,29 +52,49 @@ public class PollThread implements Runnable{
     @Override
     public void run() {
         dateNow = Instant.now();
-
-        /** Check if Todays date is Between thr from and to date range set in the properties file*/
+//        previousDate = dateFrom;
+        /** Check if the date and time now is Between the from and to date range set in the properties file*/
         while(dateNow.isAfter(dateFrom) && dateNow.isBefore(dateTo)) {
             try {
 
-                /**  Wait for first Delta time in order to allow the app to generate the first delta minutes */
-                Thread.sleep(Integer.parseInt(dateDelta));
 
-                /**  Makes the request to New Relic */
+                /** Wait for first Delta time in order to allow the app to generate the first delta minutes*/
+                System.out.println("waiting for Delta");
+                for (int i = 0; i < Integer.parseInt(dateDelta); i++) {
+                    Thread.sleep(1000);
+                    dateDelta = String.valueOf(Integer.parseInt(dateDelta) - 1000);
+                    System.out.print(".");
+                }
+
+
+//                Thread.sleep(Integer.parseInt(dateDelta));
+
+                /** Update dateNow to the current time*/
+                dateNow  = Instant.now();
+
+                /** Update the currentEnvironment DateRange with the new dateFrom and dateNow values
+                 * This will set the New relic request up to pull data based on the dateDelta we have set*/
+                DateRange updateDate = new DateRange(dateFrom.toString() ,dateNow.toString());
+                currentEnvironment.setDateRange(updateDate);
+
+                /** Makes the request to New Relic*/
                 String NRResponseData = request.makeApplicationRESTRequest(currentApplication, currentEnvironment);
 
-                /**  Publishes New Relic response data to the HornetQ on the Wildfly AS */
-//                application.Publish(NRResponseData);
+                /** Publishes New Relic response data to the HornetQ on the Wildfly AS*/
+                application.Publish(NRResponseData);
 
                 if (debug){
 //                    System.out.println("Date now inside Worker" + dateNow);
                     System.out.println(NRResponseData);
                 }
 
-                /**  Update current Date/Time*/
-                dateNow = Instant.now();
-                DateRange updateDate = new DateRange(dateNow.toString() ,dateTo.toString());
-                currentEnvironment.setDateRange(updateDate);
+                /**  Update dateFrom with the previous dateTo, this is to insure the
+                 * next request starts at the point the last request ended*/
+                dateFrom = currentEnvironment.getDateRange().getTo();
+
+                /** Update dateNow to the current time, this is simply refreshing dateNow to insure it is always current*/
+                dateNow  = Instant.now();
+
 //                System.out.println(currentEnvironment.getDateRange().getFrom());
             } catch (Throwable throwable) {
                 throwable.printStackTrace();

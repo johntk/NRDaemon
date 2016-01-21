@@ -2,8 +2,9 @@ package com.ibm.nrdaemon.model;
 
 import org.joda.time.Instant;
 
-import java.sql.Timestamp;
-
+/** This class is used to to store the daterange from and to values in the properties file,
+ * it is accessed in the MakeRequest class and used in the New Relic request, it is also used in the PollThread
+ * Class in the worker thread to manage the requests range*/
 public class DateRange {
     private final Instant from;
     private final Instant to;
@@ -11,9 +12,6 @@ public class DateRange {
     public DateRange(String from, String to) {
         this.from = TimestampUtils.parseTimestamp(from);
         this.to = TimestampUtils.parseTimestamp(to);
-
-//        System.out.println("From " + from);
-//        System.out.println("To " + to);
     }
 
     public DateRange(long from, long to) {

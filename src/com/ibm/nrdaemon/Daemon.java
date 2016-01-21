@@ -32,7 +32,7 @@ public class Daemon {
     private void setupConfig() throws IOException {
 
         /** get the properties file names*/
-        String applicationPropFileName = "datacenter.properties";
+        String applicationPropFileName = "ApplicationProp/datacenterALL.properties";
 
         /** Create the properties objects*/
         fetchApp = new FetchProperties();
