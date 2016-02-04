@@ -64,7 +64,7 @@ public class Daemon {
     protected void runModeApplications() throws Throwable {
 
         /** Thread Pool*/
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(60);
 
         /** Loop through Environment List<>*/
         for (Environment env : fetchApp.getEnvironments()) {

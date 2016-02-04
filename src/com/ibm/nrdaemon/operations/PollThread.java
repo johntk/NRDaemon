@@ -21,7 +21,7 @@ public class PollThread implements Runnable{
     Instant dateNow;
 
     /** This is the time for the thread to sleep between requests, this will not be hardcoded in the future */
-    String dateDelta = "9000";
+    int dateDelta = 70000;
 
     /** This is the dateRange for the thread to run*/
     Instant dateFrom;
@@ -48,7 +48,7 @@ public class PollThread implements Runnable{
         this.dateFrom = currentEnvironment.getDateRange().getFrom();
         this.dateTo = currentEnvironment.getDateRange().getTo();
     }
-
+// ToDO: Add error handling for bad requests
     @Override
     public void run() {
         dateNow = Instant.now();
@@ -57,17 +57,9 @@ public class PollThread implements Runnable{
         while(dateNow.isAfter(dateFrom) && dateNow.isBefore(dateTo)) {
             try {
 
-
                 /** Wait for first Delta time in order to allow the app to generate the first delta minutes*/
-                System.out.println("waiting for Delta");
-                for (int i = 0; i < Integer.parseInt(dateDelta); i++) {
-                    Thread.sleep(1000);
-                    dateDelta = String.valueOf(Integer.parseInt(dateDelta) - 1000);
-                    System.out.print(".");
-                }
+                Thread.sleep(dateDelta);
 
-
-//                Thread.sleep(Integer.parseInt(dateDelta));
 
                 /** Update dateNow to the current time*/
                 dateNow  = Instant.now();

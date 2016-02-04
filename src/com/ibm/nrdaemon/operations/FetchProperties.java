@@ -77,8 +77,8 @@ public class FetchProperties {
         /** loop through each environment*/
         for (Environment env : environments) {
             String environmentName = env.getName();
-            String URL = p.getProperty("url."+ environmentName);
-            String metricNames = p.getProperty("metricNames."+ environmentName);
+            String URL = p.getProperty("url");
+            String metricNames = p.getProperty("metricNames");
             String key = p.getProperty("key." + environmentName);
 
             System.out.println("Key = " + key);
