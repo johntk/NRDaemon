@@ -8,16 +8,19 @@ import java.util.logging.Logger;
 import javax.jms.*;
 import javax.naming.*;
 
-/** This class sends the New Relic Response data to the Wildfly AS */
-public class Publisher implements ExceptionListener{
+
+/**
+ * This class sends the New Relic Response data to the Wildfly AS
+ */
+public class Publisher implements ExceptionListener {
 
     private static final Logger log = Logger.getLogger(Publisher.class.getName());
     private Connection connection = null;
-    private MessageProducer producer;
-    private Session queueSession;
     private Context context;
 
-    /** This is a hack to access properties files when debugging*/
+    /**
+     * This is a hack to access properties files when debugging
+     */
     protected boolean debug = true;
 
     protected void Publish(String JSONData) throws Throwable {
@@ -25,16 +28,18 @@ public class Publisher implements ExceptionListener{
         try {
             /** Get the initial context */
             final Properties props = new Properties();
+
             /** If debugging in IDE the properties are acceded this way */
-            if(debug){
-                InputStream f = getClass().getClassLoader().getResourceAsStream("publisher.properties");
-                props.load(f);
+            if (debug) {
+                try (InputStream f = getClass().getClassLoader().getResourceAsStream("publisher.properties")) {
+                    props.load(f);
+                }
             }
             /** If running the .jar artifact the properties are acceded this way*/
-            else{
+            else {
                 File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
                 String propertiesPath = jarPath.getParentFile().getAbsolutePath();
-                props.load(new FileInputStream(propertiesPath+ File.separator + "publisher.properties"));
+                props.load(new FileInputStream(propertiesPath + File.separator + "publisher.properties"));
             }
 
             /** These few lines should be removed and setup in the properties file*/
@@ -51,34 +56,32 @@ public class Publisher implements ExceptionListener{
             ConnectionFactory connFactory = (ConnectionFactory) context.lookup(props.getProperty("DEFAULT_CONNECTION_FACTORY"));
 
             /** Create a queue connection */
-            connection = connFactory.createConnection(props.getProperty("DEFAULT_USERNAME"), props.getProperty("DEFAULT_PASSWORD"));
+            try (Connection connection = connFactory.createConnection(props.getProperty("DEFAULT_USERNAME"), props.getProperty("DEFAULT_PASSWORD"));
 
-            /** Create a queue session */
-            queueSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                 /** Create a queue session */
+                 Session queueSession = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-            /** Create a queue producer */
-            producer = queueSession.createProducer(queue);
+                 /** Create a queue producer */
+                 MessageProducer producer = queueSession.createProducer(queue)) {
 
-            /** Start connection */
-            connection.start();
+                /** Start connection */
+                connection.start();
 
-            /** Send the data */
-            this.sendMessage(JSONData);
+                /** Send the data */
+                TextMessage message = queueSession.createTextMessage(JSONData);
+                producer.send(message);
 
+            }
         } catch (Exception e) {
             log.severe(e.getMessage());
             throw e;
-        }finally {
-            this.finalize();
-        }
-    }
-
-    public void sendMessage(String newRelicData) {
-        try {
-            TextMessage message = queueSession.createTextMessage(newRelicData);
-            producer.send(message);
-        } catch (JMSException ex) {
-            ex.printStackTrace();
+        } finally {
+            if (context != null) {
+                context.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
         }
     }
 
@@ -97,8 +100,7 @@ public class Publisher implements ExceptionListener{
             if (connection != null) {
                 connection.close();
             }
-        }
-        finally {
+        } finally {
             super.finalize();
         }
     }
