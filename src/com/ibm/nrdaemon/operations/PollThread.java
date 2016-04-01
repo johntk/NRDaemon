@@ -3,9 +3,10 @@ package com.ibm.nrdaemon.operations;
 import com.ibm.nrdaemon.model.Application;
 import com.ibm.nrdaemon.model.DateRange;
 import com.ibm.nrdaemon.model.Environment;
+
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-
+import org.joda.time.LocalDateTime;
 
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import java.util.Map;
  * Currently only Applications are handled, servers and plugins will be added in the future*/
 public class PollThread implements Runnable{
 
+
     /** This is a hack to view debug print outs*/
     protected boolean debug = true;
 
@@ -21,12 +23,11 @@ public class PollThread implements Runnable{
     Instant dateNow;
 
     /** This is the time for the thread to sleep between requests, this will not be hardcoded in the future */
-    int dateDelta = 70000;
+    int dateDelta = 240000;
 
     /** This is the dateRange for the thread to run*/
     Instant dateFrom;
     Instant dateTo;
-
 
     /** Request object to make request to New Relic*/
     MakeRequest request = new MakeRequest();
@@ -51,8 +52,8 @@ public class PollThread implements Runnable{
 // ToDO: Add error handling for bad requests
     @Override
     public void run() {
-        dateNow = Instant.now();
-//        previousDate = dateFrom;
+        dateNow = new Instant(LocalDateTime.now().toString());
+
         /** Check if the date and time now is Between the from and to date range set in the properties file*/
         while(dateNow.isAfter(dateFrom) && dateNow.isBefore(dateTo)) {
             try {
@@ -62,7 +63,7 @@ public class PollThread implements Runnable{
 
 
                 /** Update dateNow to the current time*/
-                dateNow  = Instant.now();
+                dateNow = new Instant(LocalDateTime.now().toString());
 
                 /** Update the currentEnvironment DateRange with the new dateFrom and dateNow values
                  * This will set the New relic request up to pull data based on the dateDelta we have set*/
@@ -76,18 +77,18 @@ public class PollThread implements Runnable{
                 application.Publish(NRResponseData);
 
                 if (debug){
-//                    System.out.println("Date now inside Worker" + dateNow);
                     System.out.println(NRResponseData);
+
                 }
+                System.out.println(NRResponseData);
 
                 /**  Update dateFrom with the previous dateTo, this is to insure the
                  * next request starts at the point the last request ended*/
                 dateFrom = currentEnvironment.getDateRange().getTo();
 
                 /** Update dateNow to the current time, this is simply refreshing dateNow to insure it is always current*/
-                dateNow  = Instant.now();
+                dateNow = new Instant(LocalDateTime.now().toString());
 
-//                System.out.println(currentEnvironment.getDateRange().getFrom());
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }

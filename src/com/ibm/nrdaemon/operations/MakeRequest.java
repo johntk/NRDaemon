@@ -24,47 +24,41 @@ public class MakeRequest {
         String appID = entry.getValue().getId();
         String appName = entry.getValue().getName();
         String envName = env.getName();
-
+        JSONObject environment = new JSONObject();
         /** Create the string to send in the request to New relic, works with out using "TimestampUtils.format" may remove after further testing*/
         String url = env.getURL() + appID + env.getMetricNames() + env.getDateRange().getFrom() + "&to=" + TimestampUtils.format(env.getDateRange().getTo()) + "&period=60";
-
 //        System.out.println("Env Name: " + env.getName() + "App Name: " + entry.getValue().getName());
 //        System.out.println("TImestamp Parser" +TimestampUtils.format(env.getDateRange().getTo()));
 
         /** Create the request using Apache API*/
-        CloseableHttpClient client = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(url);
+        try(CloseableHttpClient client = HttpClientBuilder.create().build()){
 
-        /** Set the Environment API key in the header of the request*/
-        request.setHeader("X-API-KEY", env.getApiKey());
+            HttpGet request = new HttpGet(url);
 
-        /** Send the request and return the response*/
-        HttpResponse response = client.execute(request);
-        InputStream input = response.getEntity().getContent();
+            /** Set the Environment API key in the header of the request*/
+            request.setHeader("X-API-KEY", env.getApiKey());
 
-        /** Parse the NR response into a JSONObject*/
-        JSONObject JSON = new JSONObject(IOUtils.toString(input));
+            /** Send the request and return the response*/
+            HttpResponse response = client.execute(request);
+            InputStream input = response.getEntity().getContent();
 
-        /** New JSONobject to send to PreProcessor*/
-//        JSONObject applicationId = new JSONObject();
-//        JSONObject applicationName = new JSONObject();
-        JSONObject environment = new JSONObject();
+            /** Parse the NR response into a JSONObject*/
+            JSONObject JSON = new JSONObject(IOUtils.toString(input));
 
-       /** JSONArray to put application ID and the NR response JSONObject, probably don't need, may remove*/
-        JSONArray array = new JSONArray();
-        array.put(appName);
-        array.put(appID);
-        array.put(JSON);
+            /** New JSONobject to send to PreProcessor*/
 
-        environment.put(envName, array);
+            /** JSONArray to put application ID and the NR response JSONObject, probably don't need, may remove*/
+            JSONArray array = new JSONArray();
+            array.put(appName);
+            array.put(appID);
+            array.put(JSON);
+            environment.put(envName, array);
 
-//        /** Put the application name and JSONArray into the new JSONObject*/
-//        applicationId.put(envName, array);
-//        applicationName.put(appName, applicationId);
-//        environment.put(envName, applicationName);
-//
-//        System.out.println(environment.toString());
-
+            return environment.toString();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return environment.toString();
     }
 }
