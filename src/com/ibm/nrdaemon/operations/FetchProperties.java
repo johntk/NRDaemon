@@ -32,7 +32,7 @@ public class FetchProperties {
             props.load(f);
         }else{
             File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-            System.out.println(jarPath);
+//            System.out.println(jarPath);
             String propertiesPath = jarPath.getParentFile().getAbsolutePath();
             props.load(new FileInputStream(propertiesPath + File.separator + propFileName));
         }
@@ -81,7 +81,7 @@ public class FetchProperties {
             String metricNames = p.getProperty("metricNames");
             String key = p.getProperty("key." + environmentName);
 
-            System.out.println("Key = " + key);
+//            System.out.println("Key = " + key);
             if (null == key) {
                 fatalConfigError("No API key was configured for environment '" + environmentName + "'.");
             }
@@ -111,19 +111,11 @@ public class FetchProperties {
             while (st.hasMoreTokens()) {
                 String appName = st.nextToken();
 
-//                if (debug)
-//                    System.out.println("DEBUG: appName= " + appName);
-
-//                String timeRange = p.getProperty("timeRange."+ environmentName+ "." + appName);
-//                String timePollGranularity = p.getProperty("timePollGranularity."+ environmentName+ "." + appName);
                 String appId = getStringProperty(p, "appid." + env.getName() + "." + appName);
-
 
                 /** Create a new application object for each appName*/
                 Application app = new Application(env, appName);
                 app.setId(appId);
-//                app.setTimePollGranularity(timePollGranularity);
-//                app.setTimeRange(timeRange);
                 env.addApplication(app);
             }
         }
@@ -142,9 +134,9 @@ public class FetchProperties {
             String to = getStringProperty(p, dateRangePropertyTo);
             String from = getStringProperty(p, dateRangePropertyFrom);
 
-            // if (debug)
-
-            System.out.println("DEBUG: date range='" + from + "' to '" + to + "'");
+            if (debug) {
+                System.out.println("DEBUG: " +environmentName+ " from = '" + from + "' to '" + to + "'");
+            }
             env.setDateRange(new DateRange(from, to));
         }
 

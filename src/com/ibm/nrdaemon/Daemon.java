@@ -4,6 +4,9 @@ import com.ibm.nrdaemon.model.Application;
 import com.ibm.nrdaemon.model.Environment;
 import com.ibm.nrdaemon.operations.FetchProperties;
 import com.ibm.nrdaemon.operations.PollThread;
+import com.ibm.nrdaemon.operations.Publisher;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Map;
@@ -14,14 +17,19 @@ import java.util.concurrent.Executors;
  * property values, creating the worker threads and adding them to the thread pool */
 public class Daemon {
 
+    private static Logger logger = Logger.getLogger(Daemon.class.getName());
+
     /** FetchProperties Object parses properties files into classes*/
     private FetchProperties fetchApp;
+    /** Publisher object which is responsible for sending data to the ActiveMQ Queue on the Wildfly AS */
+    private Publisher application;
 
     public static void main(String[] args) throws InterruptedException, IOException {
 
         Daemon daemon = new Daemon();
         daemon.setupConfig();
         daemon.start();
+        BasicConfigurator.configure();
     }
 
     public Daemon() {
@@ -36,6 +44,7 @@ public class Daemon {
 
         /** Create the properties objects*/
         fetchApp = new FetchProperties();
+        application = new Publisher();
 
         /**Parse the properties into classes*/
         fetchApp.buildConfig(applicationPropFileName);
@@ -56,6 +65,7 @@ public class Daemon {
                 System.exit(0);
             }
         } catch (Throwable throwable) {
+            logger.fatal("throwable happen Daemon class!", throwable);
             throwable.printStackTrace();
         }
     }
@@ -73,7 +83,7 @@ public class Daemon {
             for (Map.Entry<String, Application> app : mapOfApps.entrySet()) {
 
                 /** Worker Thread*/
-                PollThread worker = new PollThread(app, env);
+                PollThread worker = new PollThread(app, env, application);
 
                 /** Add Worker Thread to Thread Pool*/
                 executor.execute(worker);

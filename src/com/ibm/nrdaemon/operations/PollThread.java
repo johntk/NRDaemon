@@ -4,9 +4,10 @@ import com.ibm.nrdaemon.model.Application;
 import com.ibm.nrdaemon.model.DateRange;
 import com.ibm.nrdaemon.model.Environment;
 
-import org.joda.time.DateTime;
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
+
 
 import java.util.Map;
 
@@ -15,10 +16,10 @@ import java.util.Map;
  * Currently only Applications are handled, servers and plugins will be added in the future*/
 public class PollThread implements Runnable{
 
-
+    private static Logger logger = Logger.getLogger(PollThread.class.getName());
     /** This is a hack to view debug print outs*/
-    protected boolean debug = true;
-
+    protected boolean debug = false;
+    private Publisher application;
     /** Today's date and time, I may add this to the dateRange class, need to ask Mentor */
     Instant dateNow;
 
@@ -39,12 +40,12 @@ public class PollThread implements Runnable{
     Map.Entry<String, Application> currentApplication;
 
     /** Publisher object which is responsible for sending data to the HornetQ on the Wildfly AS */
-    Publisher application = new Publisher();
+//    Publisher application = new Publisher();
 
-    public PollThread(Map.Entry<String, Application> app, Environment env){
+    public PollThread(Map.Entry<String, Application> app, Environment env, Publisher application){
         this.currentEnvironment = env;
         this.currentApplication = app;
-
+        this.application = application;
         /** Set the dateFrom  and dateTo based on the properties value, format it using TimestampUtils and Joda-time*/
         this.dateFrom = currentEnvironment.getDateRange().getFrom();
         this.dateTo = currentEnvironment.getDateRange().getTo();
@@ -60,7 +61,6 @@ public class PollThread implements Runnable{
 
                 /** Wait for first Delta time in order to allow the app to generate the first delta minutes*/
                 Thread.sleep(dateDelta);
-
 
                 /** Update dateNow to the current time*/
                 dateNow = new Instant(LocalDateTime.now().toString());
@@ -80,7 +80,6 @@ public class PollThread implements Runnable{
                     System.out.println(NRResponseData);
 
                 }
-                System.out.println(NRResponseData);
 
                 /**  Update dateFrom with the previous dateTo, this is to insure the
                  * next request starts at the point the last request ended*/
@@ -90,7 +89,7 @@ public class PollThread implements Runnable{
                 dateNow = new Instant(LocalDateTime.now().toString());
 
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                logger.fatal("throwable happen PollThread class!",throwable);
             }
         }
         System.out.println(currentApplication.getValue().getName() + " has ended..");

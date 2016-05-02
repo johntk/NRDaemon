@@ -8,6 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,8 +19,11 @@ import java.util.Map;
 /** All the Request to NewRelic are made in this class */
 public class MakeRequest {
 
+    private static Logger logger = Logger.getLogger(MakeRequest.class);
+
     /** This method makes the REST API request(s) to New Relic*/
     protected String makeApplicationRESTRequest(Map.Entry<String, Application> entry, Environment env) throws Throwable {
+
         /** Get the application name from the application object stored in the Map<>*/
         String appID = entry.getValue().getId();
         String appName = entry.getValue().getName();
@@ -57,6 +61,7 @@ public class MakeRequest {
             return environment.toString();
         }
         catch (Exception e){
+            logger.error("Exceptions happen! MakeRequest class", e);
             e.printStackTrace();
         }
         return environment.toString();
