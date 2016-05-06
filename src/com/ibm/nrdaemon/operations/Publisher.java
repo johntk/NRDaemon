@@ -36,6 +36,8 @@ public class Publisher implements ExceptionListener {
                 if (debug) {
                     try (InputStream f = getClass().getClassLoader().getResourceAsStream("publisher.properties")) {
                         props.load(f);
+                    }catch (Exception e) {
+                        logger.fatal("Exception happen Publisher class!1", e);
                     }
                 }
                 /** If running the .jar artifact the properties are acceded this way*/
@@ -77,7 +79,7 @@ public class Publisher implements ExceptionListener {
                     break;
                 }
             } catch (Exception e) {
-                logger.fatal("Exception happen Publisher class!1", e);
+                logger.fatal("Exception happen Publisher class!2", e);
             } finally {
                 if (context != null) {
                     context.close();
@@ -91,7 +93,7 @@ public class Publisher implements ExceptionListener {
 
     @Override
     public void onException(JMSException exception) {
-        logger.fatal("Exception happen Publisher class!2", exception);
+        logger.fatal("Exception happen Publisher class!3", exception);
     }
 
     @Override

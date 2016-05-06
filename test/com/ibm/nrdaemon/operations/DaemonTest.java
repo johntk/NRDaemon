@@ -14,7 +14,6 @@ import java.util.Map;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
-
 public class DaemonTest {
 
     private String applicationPropFileName = "ApplicationProp/datacenterALL.properties";
@@ -71,5 +70,11 @@ public class DaemonTest {
         String TimeStampFormat = "2015-12-17T16:22:40.000Z";
         Instant TimeStampFormatTest = TimestampUtils.parseTimestamp("2015-12-17T16:22:40+00:00");
         assertEquals(TimeStampFormat, TimeStampFormatTest.toString());
+    }
+
+    /** Test the TimestampUtils formatting fails*/
+    @Test(expected = IllegalArgumentException.class)
+    public void TimeStampUtilsTestFail(){
+        Instant TimeStampFormatTest = TimestampUtils.parseTimestamp("2015-12-1716:22:40+00:00");
     }
 }
